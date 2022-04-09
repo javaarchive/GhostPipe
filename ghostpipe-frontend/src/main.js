@@ -11,6 +11,13 @@ import * as directives from 'vuetify/directives'
 
 loadFonts()
 
-createApp(App)
-  .use(vuetify)
-  .mount('#app')
+let app = createApp(App)
+  .use(vuetify);
+
+
+app.config.errorHandler = (err) => {
+  alert("Error Encounter: " + err);
+}
+
+app.mount('#app');
+
