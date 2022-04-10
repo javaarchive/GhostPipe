@@ -13,6 +13,7 @@
     "dexie": "^3.2.1",
     "roboto-fontface": "*",
     "vue": "^3.2.25",
+    "vue-plyr": "^7.0.0",
     "vue-router": "^4.0.14",
     "vuetify": "^3.0.0-beta.0",
     "webfontloader": "^1.0.0"

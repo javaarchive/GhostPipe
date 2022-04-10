@@ -1,0 +1,8 @@
+.thumbnail-fill-width{
+    width: 100%;
+    height: auto;
+}
+
+.gp-description{
+    white-space: pre-line;
+}
