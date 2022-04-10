@@ -13,7 +13,7 @@ export default {
   name: 'PlatformVideoPage',
 
   data: () => {
-    
+    return {};
   },
   components: {
     PlatformVideo

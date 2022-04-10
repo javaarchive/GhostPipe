@@ -1,4 +1,4 @@
-const config = require("./config");
+const config = require("./config")
 
 const express = require('express');
 
@@ -18,6 +18,14 @@ if(config.pretty_print_debug){
 }
 
 app.disable("x-powered-by");
+
+const morgan = require("morgan");
+app.use(morgan(config.morganMode));
+
+const cors = require("cors");
+app.use(cors({
+  origin: config.corsOrigin
+}));
 
 // Get /
 
@@ -59,7 +67,7 @@ function makeProxyObj(domain) {
 
 
 app.use((req, res, next) => {
-    if (!req.originalUrl.startsWith("/real_api")) {
+    if (!req.originalUrl.startsWith("/real_api") && !req.originalUrl.endsWith(".ico")) {
   
       let middleware = makeProxyObj(config.pipedInstances[Math.floor(Math.random() * config.pipedInstances.length)]);
   

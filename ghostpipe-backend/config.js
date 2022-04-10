@@ -26,5 +26,11 @@ module.exports = {
         "pipedapi.tokhmi.xyz",
         "pipedapi.notyourcomputer.net",
         "pa.il.ax"
-    ]
+    ],
+    corsOrigin: [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://ghostpipe.tad.us.eu.org"
+    ],
+    morganMode: "dev"
 }
