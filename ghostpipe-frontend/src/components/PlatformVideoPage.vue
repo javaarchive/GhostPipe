@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <PlatformVideo v-bind:vid="$route.query.vid" ></PlatformVideo>
-    <p>Rendering on </p>
+    <PlatformVideo v-bind:vid="$route.query.v" ></PlatformVideo>
+    <p>Rendering on page. </p>
   </v-container>
 </template>
 
