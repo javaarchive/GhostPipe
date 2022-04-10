@@ -1,4 +1,7 @@
 {
   "name": "ghostpipe",
-  "description": "Alternative YT frontend with small api changes"
+  "description": "Alternative YT frontend with small api changes",
+  "dependencies": {
+    
+  }
 }
