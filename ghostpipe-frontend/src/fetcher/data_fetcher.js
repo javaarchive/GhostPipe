@@ -3,6 +3,9 @@
 function determineAPIUrl(){
     if(location.hostname === "localhost"){
         return "http://localhost:3003";
+    }else if(location.hostname.endsWith(".gitpod.io")){
+        // Replace port number
+        return "https://" + location.hostname.replace("3000","3003");
     }else if(localStorage.getItem("apiURL")){
         return localStorage.getItem("apiURL");
     }else{
@@ -10,13 +13,17 @@ function determineAPIUrl(){
     }
 }
 
+console.log("Determined api url -> ",determineAPIUrl())
+
 export function dfetch(url,fetchOptions,raw = false){
     let newUrl = url;
-    if(!url.startsWith("http")){
+    if(!url.startsWith("http") || url.startsWith("/")){
         newUrl = determineAPIUrl() + url;
     }
+
     return (new Promise((resolve,reject) => {
         function doFetch(){
+            console.log("Fetching URL",newUrl);
             fetch(newUrl,fetchOptions).then(resp => {
                 if(resp.ok){
                     if(raw){

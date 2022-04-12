@@ -9,6 +9,16 @@ const {
 
 const app = express();
 
+const cors = require("cors");
+
+console.log("CORS Enabled to  " + config.corsOrigin);
+
+app.use(cors({
+ //  origin: config.corsOrigin,
+  methods: ["GET","POST","OPTIONS","HEAD"],
+  credentials: true
+}));
+
 if(config.behind_proxy){
   app.set("trust proxy", true);
 }
@@ -21,11 +31,6 @@ app.disable("x-powered-by");
 
 const morgan = require("morgan");
 app.use(morgan(config.morganMode));
-
-const cors = require("cors");
-app.use(cors({
-  origin: config.corsOrigin
-}));
 
 // Get /
 
@@ -71,14 +76,22 @@ app.use((req, res, next) => {
   
       let middleware = makeProxyObj(config.pipedInstances[Math.floor(Math.random() * config.pipedInstances.length)]);
   
+      res.set("X-From-Balanced-Proxy", "1");
+
       middleware(req, res, next);
     } else {
+      res.set("X-From-Server-Backend", "1");
       next();
     }
  });
 
+ app.use(cors({
+  origin: config.corsOrigin
+}));
+
 app.use("/real_api/tasks", require("./routes/tasks"));
 app.use("/real_api/videos", require("./routes/video_fulldata"));
+app.use("/real_api/downloaded", require("./routes/serve_files"));
 
 console.log("Reached end up of routes, starting to listen");
 app.listen(config.port,() => {

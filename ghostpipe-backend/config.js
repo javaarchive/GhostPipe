@@ -1,3 +1,12 @@
+const path = require("path");
+const fs = require("fs");
+
+try{
+    fs.mkdirSync("/tmp/ghostpipe");
+}catch(ex){
+    console.log("Video tmpdir exists already. Not creating.")
+}
+
 module.exports = {
     ratelimitOpts: {
         // Passed to https://www.npmjs.com/package/rate-limiter-flexible
@@ -19,7 +28,7 @@ module.exports = {
     video_lru: {
         max: 500
     },
-    behind_proxy: false,
+    behind_proxy: true,
     pretty_print_debug: true,
     pipedInstances: [
         "pipedapi.kavin.rocks",
@@ -34,5 +43,13 @@ module.exports = {
     ],
     morganMode: "dev",
     videoSizeLimit: 1024*1024*1024*5,
-    videoTempDir: "/tmp"
+    videoTempDir: "/tmp/ghostpipe",
+    ytdlpPath: (process.env.YTDLP_CWD) ? path.join(process.cwd(), "yt-dlp") : "yt-dlp"
+}
+
+// GitPod helper
+if(process.env.GITPOD_WORKSPACE_URL){
+    let url = new URL(process.env.GITPOD_WORKSPACE_URL);
+    url.hostname = "3003-" + url.hostname;
+    module.exports.corsOrigin.push(url.toString());
 }

@@ -36,11 +36,9 @@ router.use(express.json());
 // ffmpeg
 
 const ffmpeg = require("fluent-ffmpeg");
-if(process.env.USE_FFMPEG_STATIC_NPM_PKG == "0"){
+if(process.env.USE_FFMPEG_STATIC_NPM_PKG == "1"){
     ffmpeg.setFfmpegPath(require("ffmpeg-static"))
 }
-
-const yt_dlp_path = (process.env.YTDLP_CWD) ? path.join(process.cwd(), "yt-dlp") : "yt-dlp";
 
 async function processTask(task){
     task.status = "preparing";
@@ -56,13 +54,17 @@ async function processTask(task){
         console.log("Got line",strData.replace("\n","\\n"));
         if(strData.startsWith("{")){
             let progress = JSON.parse(strData);
-            task.downloadedDecimal = progress.downloaded_bytes/progress.total_bytes;
-            task.dest = progress.filename;
-            console.log("Downloaded",task.downloadedDecimal*100,"%");
+            if(progress.downloaded_bytes){
+                task.downloadedDecimal = progress.downloaded_bytes/progress.total_bytes;
+                task.dest = progress.filename;
+                console.log("Downloaded",task.downloadedDecimal*100,"%");
+            }else{
+                // TODO: add something?
+            }
         }
     });
 
-    let cp = child_process.spawn(yt_dlp_path,["-o",task.videoID+".%(ext)s","--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
+    let cp = child_process.spawn(config.ytdlpPath,["-o",task.videoID+".%(ext)s","--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
         cwd: config.videoTempDir
     });
 
@@ -103,7 +105,7 @@ async function processTask(task){
     });
 }
 
-router.get("/submit_task",criticalRatelimiter, async (req, res) => {
+router.post("/submit_task",criticalRatelimiter, async (req, res) => {
     if(ongoingTasks.length >= config.maxConcurrentTasks){
         res.status(503).send("Task counted exceeded");
     }

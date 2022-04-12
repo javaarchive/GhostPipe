@@ -26,7 +26,7 @@ router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
         res.send(video);
     }else{
         try{
-            let {stdout,stderr,error} = await execFile("yt-dlp",["-J","https://youtube.com/watch?v=" + id]);
+            let {stdout,stderr,error} = await execFile(config.ytdlpPath,["-J","https://youtube.com/watch?v=" + id]);
             if(error){
                 console.log("Extraction Error",stderr,"stdout",stdout,"error",error);
                 res.status(500).send("Extraction Error");
