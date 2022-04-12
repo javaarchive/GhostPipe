@@ -3,13 +3,15 @@ const router = express.Router();
 
 const child_process = require('child_process');
 
+const path = require('path');
+
 // Limiters
 const criticalRatelimiter = require("../middleware/ratelimit");
 const normalRatelimiter = require("../middleware/ratelimit_noncritical");
 
 // Video Data Accessor
 const video_lru = require("../caches/video_lru");
-const config= require('../config');
+const config = require('../config');
 
 // Stream Helper
 const Linestream = require("line-stream");
@@ -31,13 +33,14 @@ function getTask(id){
 router.use(express.json());
 
 // ffmpeg
+
 const ffmpeg = require("fluent-ffmpeg");
 
 async function processTask(task){
     task.status = "preparing";
     task.downloadingVideo = true;
     // "%(progress.filename)s,%(progress.downloaded_bytes)s,%(progress.total_bytes)s,%(progress.total_bytes_estimate)s" old ptemplate
-   
+
     let lineStream = Linestream("\n");
     lineStream.on("data",data => {
         let strData = data;
@@ -48,13 +51,15 @@ async function processTask(task){
         if(strData.startsWith("{")){
             let progress = JSON.parse(strData);
             task.downloadedDecimal = progress.downloaded_bytes/progress.total_bytes;
-            task.destFilename = progress.filename;
+            task.dest = progress.filename;
             console.log("Downloaded",task.downloadedDecimal*100,"%");
         }
     });
-    let cp = child_process.spawn("yt-dlp",["-o",task.id+".%(ext)s","--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
+
+    let cp = child_process.spawn("yt-dlp",["-o",task.videoID+".%(ext)s","--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
         cwd: config.videoTempDir
     });
+
     cp.stdout.pipe(lineStream);
     // cp.stderr.pipe(process.stderr);
     cp.on("exit",code => {
@@ -63,8 +68,27 @@ async function processTask(task){
         task.downloadingVideo = false;
         task.processingVideo = true;
         // Fire off ffmpeg task
-        
-    })
+        const command = ffmpeg(path.join(video.videoTempDir, task.dest)).
+            audioCodec("libopus")
+            .audioBitrate(196)
+            .outputOptions([
+                "-codec: copy",
+                "-hls_time 10",
+                "-hls_playlist_type vod",
+                "-hls_segment_filename " + path.join(video.videoTempDir,task.videoID+".%03d.ts")
+            ])
+            .output(task.videoID+".m3u8")
+            .on("progress", (progress) => {
+                console.log("Progress",progress);
+            })
+            .run()
+            .on("end", (req, res) => {
+                console.log("Task ffmpeg",task.videoID,"finished");
+                task.status = "finished";
+                task.processingVideo = false;
+                task.playlists = 1;
+            })
+    });
 }
 
 router.get("/submit_task",criticalRatelimiter, async (req, res) => {
@@ -90,14 +114,14 @@ router.get("/submit_task",criticalRatelimiter, async (req, res) => {
     let task = {
         videoID: req.body.vid,
         videoData: video_lru.get(req.body.vid),
-        state: "pending",
+        status: "pending",
         startTime: Date.now(),
         segements: -1,
         playlists: -1,
         processingVideo: false,
         downloadingVideo: false,
         formatID: parseInt(req.body.formatID),
-        dest:"filename",
+        dest:null,
         id: nanoid()
     };
 
