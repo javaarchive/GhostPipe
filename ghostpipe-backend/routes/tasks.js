@@ -3,6 +3,7 @@ const router = express.Router();
 
 const child_process = require('child_process');
 
+const fs = require('fs');
 const path = require('path');
 
 // Limiters
@@ -68,26 +69,32 @@ async function processTask(task){
         task.downloadingVideo = false;
         task.processingVideo = true;
         // Fire off ffmpeg task
-        const command = ffmpeg(path.join(video.videoTempDir, task.dest)).
+        const command = ffmpeg(path.join(config.videoTempDir, task.dest || fs.readdirSync(config.videoTempDir).filter(filename => filename.startsWith(task.videoID) &&
+         !filename.endsWith(".tmp") && !filename.endsWith(".m3u8") && !filename.endsWith(".ts") )[0])).
             audioCodec("libopus")
             .audioBitrate(196)
             .outputOptions([
                 "-codec: copy",
                 "-hls_time 10",
                 "-hls_playlist_type vod",
-                "-hls_segment_filename " + path.join(video.videoTempDir,task.videoID+".%03d.ts")
+                "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%03d.ts")
             ])
-            .output(task.videoID+".m3u8")
+            .output(path.join(config.videoTempDir,task.videoID+".m3u8"))
             .on("progress", (progress) => {
                 console.log("Progress",progress);
             })
-            .run()
+            .on("error", (err) => {
+                console.log("Error",err);
+                task.status = "error";
+                task.error = "Converter failure";
+            })
             .on("end", (req, res) => {
                 console.log("Task ffmpeg",task.videoID,"finished");
                 task.status = "finished";
                 task.processingVideo = false;
                 task.playlists = 1;
-            })
+            }).run()
+            
     });
 }
 
