@@ -36,6 +36,11 @@ router.use(express.json());
 // ffmpeg
 
 const ffmpeg = require("fluent-ffmpeg");
+if(process.env.USE_FFMPEG_STATIC_NPM_PKG == "0"){
+    ffmpeg.setFfmpegPath(require("ffmpeg-static"))
+}
+
+const yt_dlp_path = (process.env.YTDLP_CWD) ? path.join(process.cwd(), "yt-dlp") : "yt-dlp";
 
 async function processTask(task){
     task.status = "preparing";
@@ -57,7 +62,7 @@ async function processTask(task){
         }
     });
 
-    let cp = child_process.spawn("yt-dlp",["-o",task.videoID+".%(ext)s","--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
+    let cp = child_process.spawn(yt_dlp_path,["-o",task.videoID+".%(ext)s","--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
         cwd: config.videoTempDir
     });
 
@@ -72,7 +77,7 @@ async function processTask(task){
         const command = ffmpeg(path.join(config.videoTempDir, task.dest || fs.readdirSync(config.videoTempDir).filter(filename => filename.startsWith(task.videoID) &&
          !filename.endsWith(".tmp") && !filename.endsWith(".m3u8") && !filename.endsWith(".ts") )[0])).
             audioCodec("libopus")
-            .audioBitrate(196)
+            .audioBitrate(196) // yt max bitrate for m4a ig
             .outputOptions([
                 "-codec: copy",
                 "-hls_time 10",
