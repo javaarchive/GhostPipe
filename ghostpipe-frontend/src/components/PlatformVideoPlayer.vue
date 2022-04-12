@@ -1,15 +1,20 @@
 <template>
   <div class="gp-player" @click="synchronize">
       <vue-plyr :options="options">
-        <video controls playsinline v-bind:data-poster="viddata.hugest_jpg_thumbnail.url" ref="video">
+         <audio controls ref="audio" v-if="viddata.audioOnly">
+            <source v-bind:src="viddata.requested_video_format.url" v-bind:type="viddata.requested_video_format.mimetype" v-bind:size="viddata.requested_video_format.width">
+        </audio>
+        <video controls playsinline v-bind:data-poster="viddata.hugest_jpg_thumbnail.url" ref="video" v-else>
             <source v-bind:src="viddata.requested_video_format.url" v-bind:type="viddata.requested_video_format.mimetype" v-bind:size="viddata.requested_video_format.width">
         </video>
       </vue-plyr>
-      <audio v-bind:src="viddata.requested_audio_format.url" autoplay ref="audio" controls></audio>
+      <audio v-if="!viddata.audioOnly" v-bind:src="viddata.requested_audio_format.url" ref="audio" controls v-show="isDebug"></audio>
   </div>
 </template>
 
 <script>
+
+import config from "../config";
 
 export default {
   name: 'PlatformVideoPlayer',
@@ -17,7 +22,8 @@ export default {
     return {
         options:{
 
-        }
+        },
+        isDebug: config.isDebug
     };
   },
   props: [

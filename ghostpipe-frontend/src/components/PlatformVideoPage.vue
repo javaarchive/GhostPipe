@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <PlatformVideo v-bind:vid="$route.query.v" ></PlatformVideo>
     <p>Rendering on page. </p>
   </v-container>

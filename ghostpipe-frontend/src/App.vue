@@ -6,7 +6,12 @@
   </v-navigation-drawer>
 
   <v-app-bar app>
-    <!-- -->
+    <v-app-bar-nav-icon>
+
+    </v-app-bar-nav-icon>
+    <v-app-bar-title>
+      {{brand}}
+    </v-app-bar-title>
   </v-app-bar>
     <v-main>
       <router-view></router-view>
@@ -15,17 +20,22 @@
 </template>
 
 <script>
+
+import config from "./config";
+
 import HelloWorld from './components/HelloWorld.vue'
 
 export default {
-  name: 'GhostPipe',
+  name: config.brand,
 
   components: {
-    HelloWorld,
   },
 
   data: () => ({
-    //
+    brand: config.brand
   }),
+  mounted(){
+    document.title = config.brand;
+  }
 }
 </script>

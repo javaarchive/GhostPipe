@@ -32,5 +32,7 @@ module.exports = {
         "http://localhost:3001",
         "https://ghostpipe.tad.us.eu.org"
     ],
-    morganMode: "dev"
+    morganMode: "dev",
+    videoSizeLimit: 1024*1024*1024*5,
+    videoTempDir: "/tmp"
 }

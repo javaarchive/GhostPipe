@@ -5,18 +5,17 @@ const util = require('util');
 const execFile = util.promisify(child_process.execFile);
 
 // Cache
-const LRU = require('lru-cache');
-
-let video_lru = new LRU(config.video_lru);
+const video_lru = require("../caches/video_lru");
 
 const express = require('express');
 const router = express.Router();
 
 // Limiters
 const criticalRatelimiter = require("../middleware/ratelimit");
+const videoDeliveryRatelimiter = require("../middleware/video_delivery")
 const normalRatelimiter = require("../middleware/ratelimit_noncritical");
 
-router.get("/video/:id",normalRatelimiter, async (req,res) => {
+router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
     let id = req.params.id;
     if(id.length > 12){
         res.status(400).send("Invalid id");
@@ -48,3 +47,4 @@ router.get("/video/:id",normalRatelimiter, async (req,res) => {
 });
 
 module.exports = router;
+module.exports.video_lru = video_lru;
