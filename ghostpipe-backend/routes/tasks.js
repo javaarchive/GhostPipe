@@ -82,7 +82,7 @@ async function processTask(task){
             .audioBitrate(196) // yt max bitrate for m4a ig
             .outputOptions([
                 "-codec: copy",
-                "-hls_time 10",
+                "-hls_time 5",
                 "-hls_playlist_type vod",
                 "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%03d.ts")
             ])
@@ -95,11 +95,13 @@ async function processTask(task){
                 task.status = "error";
                 task.error = "Converter failure";
             })
-            .on("end", (req, res) => {
+            .on("end", async () => {
                 console.log("Task ffmpeg",task.videoID,"finished");
                 task.status = "finished";
                 task.processingVideo = false;
                 task.playlists = 1;
+                task.segFileList = (await fs.promises.readdir(config.videoTempDir)).filter(filename => filename.startsWith(task.videoID) && filename.endsWith(".ts"));
+                task.segments = task.segFileList.length;
             }).run()
             
     });
