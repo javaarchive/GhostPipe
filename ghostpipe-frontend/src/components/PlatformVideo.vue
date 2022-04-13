@@ -4,6 +4,8 @@
     <p v-if="isErrored">Video could not be loaded either due to network error or unavalibility. Please note that age restricted videos are unable to be loaded through the platform.</p>
     <PlatformVideoPlayer v-if="hasLoadedMetadata" v-bind:viddata="fullData"></PlatformVideoPlayer>
     <p v-bind:title="vid" class="gp-description">Description:<br />{{description}} </p>
+    <h3 v-if="hasLoadedMetadata" class="gp-description">Download Offline</h3>
+    <PlatformVideoDownload v-if="hasLoadedMetadata" v-bind:viddata="fullData"></PlatformVideoDownload>
   </div>
 </template>
 
@@ -14,6 +16,7 @@ import {dfetch} from '../fetcher/data_fetcher'
 import {processVideoData} from '../utils'
 
 import PlatformVideoPlayer from './PlatformVideoPlayer.vue'
+import PlatformVideoDownload from './PlatformVideoDownload.vue'
 
 export default {
   name: 'PlatformVideo',
@@ -54,7 +57,8 @@ export default {
       }
     }
   },components:{
-    PlatformVideoPlayer
+    PlatformVideoPlayer,
+    PlatformVideoDownload
   }
 }
 </script>

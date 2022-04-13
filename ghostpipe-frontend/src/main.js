@@ -15,6 +15,8 @@ import * as directives from 'vuetify/directives'
 
 import './styles/ghostpipe_default.css'
 
+import {humanFileSize} from "./utils";
+
 loadFonts()
 
 let app = createApp(App)
@@ -30,6 +32,12 @@ let app = createApp(App)
 
 app.config.errorHandler = (err) => {
   alert("Error Encountered: " + err);
+}
+
+app.config.globalProperties.$filters = {
+  formatFilesize(number) {
+      return humanFileSize(number);
+  }
 }
 
 app.mount('#app');

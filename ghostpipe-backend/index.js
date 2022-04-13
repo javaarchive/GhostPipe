@@ -91,6 +91,7 @@ app.use((req, res, next) => {
 
 app.use("/real_api/tasks", require("./routes/tasks"));
 app.use("/real_api/videos", require("./routes/video_fulldata"));
+app.use("/real_api/download", require("./routes/serve_files"));
 app.use("/real_api/downloaded", require("./routes/serve_files"));
 
 console.log("Reached end up of routes, starting to listen");

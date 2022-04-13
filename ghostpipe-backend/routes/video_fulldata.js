@@ -11,9 +11,9 @@ const express = require('express');
 const router = express.Router();
 
 // Limiters
-const criticalRatelimiter = require("../middleware/ratelimit");
-const videoDeliveryRatelimiter = require("../middleware/video_delivery")
-const normalRatelimiter = require("../middleware/ratelimit_noncritical");
+const {criticalRatelimiter} = require("../middleware/ratelimit");
+const {videoDeliveryRatelimiter} = require("../middleware/ratelimit")
+const {normalRatelimiter} = require("../middleware/ratelimit");
 
 router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
     let id = req.params.id;

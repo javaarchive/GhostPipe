@@ -20,8 +20,8 @@ module.exports = {
     },
     videoDeliveryRatelimitOpts: {
         // Passed to https://www.npmjs.com/package/rate-limiter-flexible
-        points: 4,
-        duration: 15
+        points: 60,
+        duration: 30
     },
     maxConcurrentTasks: 3,
     port: process.env.PORT || 3003,
@@ -44,7 +44,8 @@ module.exports = {
     morganMode: "dev",
     videoSizeLimit: 1024*1024*1024*5,
     videoTempDir: "/tmp/ghostpipe",
-    ytdlpPath: (process.env.YTDLP_CWD) ? path.join(process.cwd(), "yt-dlp") : "yt-dlp"
+    ytdlpPath: (process.env.YTDLP_CWD) ? path.join(process.cwd(), "yt-dlp") : "yt-dlp",
+    taskRetentionTime: 4*60*60*1000 // 4 hours
 }
 
 // GitPod helper

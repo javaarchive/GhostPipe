@@ -36,13 +36,18 @@ export function dfetch(url,fetchOptions,raw = false){
                 }else if(resp.status == 429 && !fetchOptions.skipAutoretry){
                     // Autoretry
                     console.log("Got 429 while fetching",url,"retry in",resp.headers.get("Retry-After"),"s");
-                    setTimeout(doFetch, parseFloat(resp.headers.get("Retry-After")) * 1000);
+                    setTimeout(doFetch, parseFloat(resp.headers.get("Retry-After")) * 1000 + 1000);
                 }else{
-                    throw new Error(`Fetch failed: ${resp.status} ${resp.statusText}`);
+                    reject(new Error(`Fetch failed: ${resp.status} ${resp.statusText}`));
                 }
             }).catch(err => {
                 // Offline Fetch Attempt
-                
+                if(fetchOptions.refetchOnNetworkDie){
+                    console.log("Fetch failed, retrying in 5s",url.fetchOptions);
+                    setTimeout(doFetch, 5000);
+                }else{
+                    reject(err);
+                }
             });
         }
         doFetch();
