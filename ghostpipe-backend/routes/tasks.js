@@ -84,6 +84,8 @@ async function processTask(task){
     });
 
     cp.stdout.pipe(lineStream);
+    cp.stdout.pipe(process.stdout);
+    cp.stderr.pipe(process.stderr);
     // cp.stderr.pipe(process.stderr);
     cp.on("exit", async code => {
         console.log("Task yt-dlp",task.videoID,"finished with code",code);
@@ -109,7 +111,7 @@ async function processTask(task){
                 "-hls_time 5",
                 "-hls_playlist_type vod",
                 "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%06d.ts"),
-                "-profile baseline"
+               // "-profile baseline"
             ])
             .output(path.join(config.videoTempDir,task.videoID+".m3u8"))
             .on("progress", (progress) => {
