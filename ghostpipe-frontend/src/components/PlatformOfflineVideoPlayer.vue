@@ -139,7 +139,7 @@ export default {
         // enableWorker: false,
         // maxBufferLength: 60,
         autoStartLoad: true,
-        lowLatencyMode: true,
+        lowLatencyMode: true
         // backBufferLength: 90
     };
     // Hls.DefaultConfig = hlsConfig;

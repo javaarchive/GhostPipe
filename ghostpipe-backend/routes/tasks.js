@@ -108,7 +108,8 @@ async function processTask(task){
                 "-vcodec libx264",
                 "-hls_time 5",
                 "-hls_playlist_type vod",
-                "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%06d.ts")
+                "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%06d.ts"),
+                "-profile baseline"
             ])
             .output(path.join(config.videoTempDir,task.videoID+".m3u8"))
             .on("progress", (progress) => {
