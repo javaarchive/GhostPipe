@@ -19,6 +19,10 @@ import {humanFileSize} from "./utils";
 
 import {patchFetch} from "./offline/patches"
 
+import {updateServiceWorker} from "./offline/sw_register"
+
+setTimeout(() => updateServiceWorker(false), 1000);
+
 loadFonts()
 
 let app = createApp(App)

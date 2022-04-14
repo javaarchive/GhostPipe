@@ -22,6 +22,6 @@
     "rate-limiter-flexible": "^2.3.6"
   },
   "devDependencies": {
-    "ffmpeg-static": "^5.0.0"
+    "ffmpeg-static": "^4.2.4"
   }
 }

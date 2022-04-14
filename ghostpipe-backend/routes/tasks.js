@@ -79,7 +79,15 @@ async function processTask(task){
         }
     });
 
-    let cp = child_process.spawn(config.ytdlpPath,["-o",task.videoID+".%(ext)s","--format",task.formatID,"--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID],{
+    let argv = ["-o",task.videoID+".%(ext)s","--format",task.formatID,"--progress-template","%(progress)j\n","https://youtube.com/watch?v=" + task.videoID];
+    if(process.env.USE_FFMPEG_STATIC_NPM_PKG == "1"){
+        argv.unshift(require("ffmpeg-static"));
+        argv.unshift("--ffmpeg-location");
+    }
+
+    console.log("Executing Command", config.ytdlpPath, argv.join(" "));
+
+    let cp = child_process.spawn(config.ytdlpPath,argv,{
         cwd: config.videoTempDir
     });
 
@@ -114,6 +122,7 @@ async function processTask(task){
                // "-profile baseline"
             ])
             .output(path.join(config.videoTempDir,task.videoID+".m3u8"))
+            .on("codecData", (codecData) => console.log(codecData))
             .on("progress", (progress) => {
                 console.log("Progress",progress);
                 if(!progress.percent) return;
