@@ -21,7 +21,7 @@ import {patchFetch} from "./offline/patches"
 
 import {updateServiceWorker} from "./offline/sw_register"
 
-setTimeout(() => updateServiceWorker(false), 1000);
+setTimeout(() => updateServiceWorker.updateServiceWorker(false), 10 * 1000);
 
 loadFonts()
 

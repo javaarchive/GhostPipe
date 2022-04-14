@@ -1,5 +1,7 @@
 import db from "../database/db";
 
+import {shouldTriggerOfflineMode} from "../offline/trigger";
+
 function determineAPIUrl(){
     if(location.hostname === "localhost"){
         return "http://localhost:3003";
@@ -24,6 +26,28 @@ export function dfetch(url,fetchOptions = {method:"GET"},raw = false){
     return (new Promise((resolve,reject) => {
         function doFetch(){
             console.log("Fetching URL",newUrl);
+            if(shouldTriggerOfflineMode()){
+                console.log("Fetching from offline cache");
+                db.requests.where({
+                    url: newUrl,
+                    method: fetchOptions.method || "GET"
+                }).toArray().then(matchedRequests => {
+                    console.log(newUrl,"matched to ",matchedRequests);
+                    if(matchedRequests.length){
+                        if(raw){
+                            resolve(new Response(matchedRequests[0].body, {
+                                status: matchedRequests[0].status,
+                                headers:{
+                                    "Content-Type": matchedRequests[0].contentType
+                                }
+                            }));
+                        }else{
+                            resolve(JSON.parse(matchedRequests[0].body));
+                        }
+                    }
+                });
+                return; // don't fetch
+            }
             fetch(newUrl,fetchOptions).then(resp => {
                 console.log("Fetch response",newUrl,"got",resp.status);
                 if(resp.ok || resp.status == 200){
@@ -55,6 +79,7 @@ export function dfetch(url,fetchOptions = {method:"GET"},raw = false){
                     reject(new Error(`Fetch failed: ${resp.status} ${resp.statusText}`));
                 }
             }).catch(err => {
+                console.log("Fetch net error",err);
                 // Offline Fetch Attempt
                 if(fetchOptions.refetchOnNetworkDie && navigator.onLine){
                     console.log("Fetch failed, retrying in 5s",url.fetchOptions);
@@ -62,8 +87,9 @@ export function dfetch(url,fetchOptions = {method:"GET"},raw = false){
                 }else{
                     db.requests.where({
                         url: newUrl,
-                        method: fetchOptions.method
+                        method: fetchOptions.method || "GET"
                     }).toArray().then(matchedRequests => {
+                        console.log(newUrl,"matched to ",matchedRequests);
                         if(matchedRequests.length){
                             if(raw){
                                 resolve(new Response(matchedRequests[0].body, {

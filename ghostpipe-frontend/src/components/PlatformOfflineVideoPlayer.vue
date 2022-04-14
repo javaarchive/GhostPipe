@@ -100,7 +100,6 @@ function HLSLocalLoader(config){
       self.aborted = true;
     }
     self.destroy = () => {
-      console.trace();
       if(self.loader){
         self.loader.destroy();
       }

@@ -5,5 +5,8 @@ export function shouldTriggerOfflineMode(){
     if(window.localStorage.getItem("forceOffline")){
         return true;
     }
+    if(!navigator.onLine){
+        return true;
+    }
     return false;
 }
