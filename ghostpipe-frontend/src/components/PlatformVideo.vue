@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 v-bind:title="title"> {{fulltitle}} (Offline: {shouldUseOffline}) </h1>
+    <h1 v-bind:title="title"> {{fulltitle}} (Offline: {{shouldUseOffline}}) </h1>
     <p v-if="isErrored">Video could not be loaded either due to network error or unavalibility. Please note that age restricted videos are unable to be loaded through the platform.</p>
     <PlatformVideoPlayer v-if="hasLoadedMetadata && !shouldUseOffline" v-bind:viddata="fullData"></PlatformVideoPlayer>
     <PlatformOfflineVideoPlayer v-if="hasLoadedMetadata && shouldUseOffline" v-bind:viddata="fullData"></PlatformOfflineVideoPlayer>
@@ -64,6 +64,7 @@ export default {
     }
   },components:{
     PlatformVideoPlayer,
+    PlatformOfflineVideoPlayer,
     PlatformVideoDownload
   }
 }

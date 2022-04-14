@@ -32,6 +32,7 @@ let app = createApp(App)
 
 
 app.config.errorHandler = (err) => {
+  console.log(err);
   alert("Error Encountered: " + err);
 }
 

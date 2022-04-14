@@ -21,7 +21,7 @@ module.exports = {
     videoDeliveryRatelimitOpts: {
         // Passed to https://www.npmjs.com/package/rate-limiter-flexible
         points: 60,
-        duration: 30
+        duration: 15
     },
     maxConcurrentTasks: 3,
     port: process.env.PORT || 3003,

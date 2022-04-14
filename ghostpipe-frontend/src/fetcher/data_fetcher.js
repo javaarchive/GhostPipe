@@ -1,4 +1,4 @@
-// TODO: offline cacher
+import db from "../database/db";
 
 function determineAPIUrl(){
     if(location.hostname === "localhost"){
@@ -15,7 +15,7 @@ function determineAPIUrl(){
 
 console.log("Determined api url -> ",determineAPIUrl())
 
-export function dfetch(url,fetchOptions,raw = false){
+export function dfetch(url,fetchOptions = {method:"GET"},raw = false){
     let newUrl = url;
     if(!url.startsWith("http") || url.startsWith("/")){
         newUrl = determineAPIUrl() + url;
@@ -31,6 +31,18 @@ export function dfetch(url,fetchOptions,raw = false){
                         resolve(resp);
                     }else{
                         resp.json().then(json => {
+                            // Cache if we can
+                            if(fetchOptions && fetchOptions.cache != "no-cache" && fetchOptions.method == "GET"){
+                                console.log("Caching to store ",newUrl);
+                                db.requests.put({
+                                    method: fetchOptions.method,
+                                    url: newUrl,
+                                    time: Date.now(),
+                                    status: resp.status,
+                                    contentType: resp.headers.get("Content-Type"),
+                                    body: new Blob([JSON.stringify(json)],{type: resp.headers.get("Content-Type")})
+                                });
+                            }
                             resolve(json);
                         }).catch(err => reject(err));
                     }
@@ -44,11 +56,30 @@ export function dfetch(url,fetchOptions,raw = false){
                 }
             }).catch(err => {
                 // Offline Fetch Attempt
-                if(fetchOptions.refetchOnNetworkDie){
+                if(fetchOptions.refetchOnNetworkDie && navigator.onLine){
                     console.log("Fetch failed, retrying in 5s",url.fetchOptions);
                     setTimeout(doFetch, 5000);
                 }else{
-                    reject(err);
+                    db.requests.where({
+                        url: newUrl,
+                        method: fetchOptions.method
+                    }).toArray().then(matchedRequests => {
+                        if(matchedRequests.length){
+                            if(raw){
+                                resolve(new Response(matchedRequests[0].body, {
+                                    status: matchedRequests[0].status,
+                                    headers:{
+                                        "Content-Type": matchedRequests[0].contentType
+                                    }
+                                }));
+                            }else{
+                                resolve(JSON.parse(matchedRequests[0].body));
+                            }
+                        }else{
+                            reject(err);
+                        }
+                    })
+                    
                 }
             });
         }

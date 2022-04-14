@@ -101,11 +101,11 @@ async function processTask(task){
         !filename.endsWith(".tmp") && !filename.endsWith(".m3u8") && !filename.endsWith(".ts") )[0];
 
         // Fire off ffmpeg task
-        const command = ffmpeg(path.join(config.videoTempDir, task.dest)).
-            audioCodec("libopus")
-            .audioBitrate(196) // yt max bitrate for m4a ig
+        const command = ffmpeg(path.join(config.videoTempDir, task.dest))
+           // .audioCodec("libopus")
+           // .audioBitrate(196) // yt max bitrate for m4a ig
             .outputOptions([
-                "-codec: copy",
+                "-vcodec libx264",
                 "-hls_time 5",
                 "-hls_playlist_type vod",
                 "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%06d.ts")
