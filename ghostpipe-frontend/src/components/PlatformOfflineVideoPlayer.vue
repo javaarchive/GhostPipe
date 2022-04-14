@@ -5,13 +5,15 @@
             
         </video>
       </vue-plyr>
-      <audio v-if="!viddata.audioOnly" v-bind:src="viddata.requested_audio_format.url" ref="audio" controls v-show="isDebug"></audio>
   </div>
 </template>
 
 <script>
 
 import config from "../config";
+
+import Hls from "Hls.js";
+
 
 export default {
   name: 'PlatformOfflineVideoPlayer',
@@ -30,7 +32,11 @@ export default {
       
   },
   mounted(){
-      
+      // Attach hls.js   
+      let hls = new Hls({
+          progressive: true
+      });
+         
   }
 }
 </script>

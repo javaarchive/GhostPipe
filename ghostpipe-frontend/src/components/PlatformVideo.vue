@@ -1,11 +1,12 @@
 <template>
   <div>
-    <h1 v-bind:title="title"> {{fulltitle}} </h1>
+    <h1 v-bind:title="title"> {{fulltitle}} (Offline: {shouldUseOffline}) </h1>
     <p v-if="isErrored">Video could not be loaded either due to network error or unavalibility. Please note that age restricted videos are unable to be loaded through the platform.</p>
-    <PlatformVideoPlayer v-if="hasLoadedMetadata" v-bind:viddata="fullData"></PlatformVideoPlayer>
+    <PlatformVideoPlayer v-if="hasLoadedMetadata && !shouldUseOffline" v-bind:viddata="fullData"></PlatformVideoPlayer>
+    <PlatformOfflineVideoPlayer v-if="hasLoadedMetadata && shouldUseOffline" v-bind:viddata="fullData"></PlatformOfflineVideoPlayer>
     <p v-bind:title="vid" class="gp-description">Description:<br />{{description}} </p>
-    <h3 v-if="hasLoadedMetadata" class="gp-description">Download Offline</h3>
-    <PlatformVideoDownload v-if="hasLoadedMetadata" v-bind:viddata="fullData"></PlatformVideoDownload>
+    <h3 v-if="hasLoadedMetadata && !shouldUseOffline" class="gp-offline-header">Download Offline</h3>
+    <PlatformVideoDownload v-if="hasLoadedMetadata && !shouldUseOffline" v-bind:viddata="fullData"></PlatformVideoDownload>
   </div>
 </template>
 
@@ -17,6 +18,9 @@ import {processVideoData} from '../utils'
 
 import PlatformVideoPlayer from './PlatformVideoPlayer.vue'
 import PlatformVideoDownload from './PlatformVideoDownload.vue'
+import PlatformOfflineVideoPlayer from './PlatformOfflineVideoPlayer.vue'
+
+import {shouldTriggerOfflineMode} from '../offline/trigger'
 
 export default {
   name: 'PlatformVideo',
@@ -26,13 +30,15 @@ export default {
     this.fetchVideoDetails();
   },
   data () {
+    console.log("Should trigger offline mode", shouldTriggerOfflineMode());
     return {
       title: "Loading...",
       isLoading: true,
       isErrored: false,
       hasLoadedMetadata: false,
       description: "A description slowly loads...",
-      fullData: null
+      fullData: null,
+      shouldUseOffline: !navigator.onLine || shouldTriggerOfflineMode()
     }
   },
   props: ["minimal","vid"],

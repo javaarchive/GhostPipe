@@ -17,6 +17,8 @@ import './styles/ghostpipe_default.css'
 
 import {humanFileSize} from "./utils";
 
+import {patchFetch} from "./offline/patches"
+
 loadFonts()
 
 let app = createApp(App)
@@ -26,8 +28,7 @@ let app = createApp(App)
     plyr: {
 
     }
-  })
-  ;
+  });
 
 
 app.config.errorHandler = (err) => {
@@ -41,4 +42,3 @@ app.config.globalProperties.$filters = {
 }
 
 app.mount('#app');
-

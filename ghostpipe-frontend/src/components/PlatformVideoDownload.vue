@@ -26,8 +26,9 @@
     <v-progress-linear v-if="task && task.processedDecimal" v-model="processedPercent"></v-progress-linear>
     <h6 v-if="downloadingChunks">Downloading splits from server</h6>
     <p v-if="downloadingChunks">
-      This is the final step, after this the video will be avalible to play offline. 
+      This is the final step, after this the video will be avalible to play offline. Download {{ savedAmount }} of {{ savedTotal }} files. 
     </p>
+     <v-progress-linear v-if="downloadingChunks" v-model="savedPercent"></v-progress-linear>
     </div>
     
 </template>
@@ -49,7 +50,9 @@ export default {
       downloadedPercent: 0,
       processedPercent: 0,
       savedPercent: 0,
-      downloadingChunks: false
+      downloadingChunks: false,
+      savedAmount: 0,
+      savedTotal: 0
     }
   },
   methods: {
@@ -105,7 +108,7 @@ export default {
               alert("Error: " + this.task.error);
               this.task = false;
               this.taskid = null;
-            }else{
+            }else if(!this.downloadingChunks){
               this.saveToDatabase();
             }
           }
@@ -117,6 +120,8 @@ export default {
       let files = Array.from(this.task.segFileList);
       files.push(this.task.videoID + ".m3u8");
       let counter = 0;
+      this.savedTotal = files.length;
+      this.savedAmount = 0;
       for(let filename of files){
         // TODO: Check offline and stop in case of physical movement instead of spam retrying
         let resp = await dfetch("/real_api/download/" + filename, {
@@ -124,6 +129,8 @@ export default {
           method: "GET",
           refetchOnNetworkDie: true
         }, true);
+
+        console.log("Downloaded Part",filename)
 
         let blob = await resp.blob();
 
@@ -135,6 +142,7 @@ export default {
         });
 
         counter ++;
+        this.savedAmount = counter;
         this.savedPercent = (counter / files.length) * 100;
       }
       this.downloadingChunks = false;

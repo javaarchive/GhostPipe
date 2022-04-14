@@ -25,7 +25,8 @@ export function dfetch(url,fetchOptions,raw = false){
         function doFetch(){
             console.log("Fetching URL",newUrl);
             fetch(newUrl,fetchOptions).then(resp => {
-                if(resp.ok){
+                console.log("Fetch response",newUrl,"got",resp.status);
+                if(resp.ok || resp.status == 200){
                     if(raw){
                         resolve(resp);
                     }else{
@@ -38,6 +39,7 @@ export function dfetch(url,fetchOptions,raw = false){
                     console.log("Got 429 while fetching",url,"retry in",resp.headers.get("Retry-After"),"s");
                     setTimeout(doFetch, parseFloat(resp.headers.get("Retry-After")) * 1000 + 1000);
                 }else{
+                    console.log("Fetch Status failed");
                     reject(new Error(`Fetch failed: ${resp.status} ${resp.statusText}`));
                 }
             }).catch(err => {
