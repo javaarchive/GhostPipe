@@ -1,3 +1,5 @@
+#!/bin/sh
+echo Installing Binaries
 cd ghostpipe-backend
 echo Downloading FFMPEG via npm
 npm install --save-dev ffmpeg-static
