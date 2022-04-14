@@ -42,7 +42,9 @@ export function dfetch(url,fetchOptions = {method:"GET"},raw = false){
                                 }
                             }));
                         }else{
-                            resolve(JSON.parse(matchedRequests[0].body));
+                            matchedRequests[0].body.text().then(str => {
+                                resolve(JSON.parse(str));
+                            });
                         }
                     }
                 });
