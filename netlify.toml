@@ -1,4 +1,4 @@
 [build]
-base = "ghostpipe-frontend/"
-publish = "ghostpipe-frontend/dist/"
+base = "ghostpipe-frontend"
+publish = "dist"
 command = "npm run build"
