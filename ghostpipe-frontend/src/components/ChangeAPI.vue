@@ -29,7 +29,7 @@ export default {
     }
   },
   mounted(){
-    this.inputURL = this.$route.params.prefill_url;
+    this.inputURL = this.$route.params.prefill_url || (new URLSearchParams(location.search)).get("prefill_url") || "";
     
   }
 }
