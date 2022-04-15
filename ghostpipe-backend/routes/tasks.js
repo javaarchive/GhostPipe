@@ -119,15 +119,18 @@ async function processTask(task){
                 "-hls_time 5",
                 "-hls_playlist_type vod",
                 "-hls_segment_filename " + path.join(config.videoTempDir,task.videoID+".%06d.ts"),
+                "-preset ultrafast"
                // "-profile baseline"
             ])
             .output(path.join(config.videoTempDir,task.videoID+".m3u8"))
-            .on("codecData", (codecData) => console.log(codecData))
+            .on("codecData", (codecData) => {
+                console.log(codecData);
+                task.dataFromCodec = codecData;
+            })
             .on("progress", (progress) => {
                 console.log("Progress",progress);
-                if(!progress.percent) return;
-                task.processedDecimal = progress.percent/100;
-                task.timemark = progress.timemark;
+                if(progress.percent) task.processedDecimal = progress.percent/100;
+                if (progress.timemark) task.timemark = progress.timemark;
             })
             .on("error", (err) => {
                 console.log("Error",err);
