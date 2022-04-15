@@ -22,4 +22,9 @@ export {LocalStoragePreferenceManager};
 
 const lspm = new LocalStoragePreferenceManager();
 
+export function getDefaultLanguage(){
+    let defaultLangName = lspm.getPref("defaultLanguage");
+    return lspm.getPref("languages").filter(lang => lang.name == defaultLangName)[0];
+}
+
 export default lspm;

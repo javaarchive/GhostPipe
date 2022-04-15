@@ -10,6 +10,7 @@ export default ({
                 "country": "US",
                 "displayName":"English (US)"
             }
-        ]
+        ],
+        defaultLanguage: "English"
     }
-})
+});
