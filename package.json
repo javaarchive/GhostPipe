@@ -5,7 +5,7 @@
     
   },
   "scripts":{
-    "heroku-prebuild": "bash install_binaries.sh"
+    "heroku-prebuild": "bash install_binaries.sh",
     "heroku-postbuild": "cd ghostpipe-backend && npm install && npm install ffmpeg-static@4.2.4"
   }
 }
