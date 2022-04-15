@@ -3,5 +3,8 @@
   "description": "Alternative YT frontend with small api changes",
   "dependencies": {
     
+  },
+  "scripts":{
+    "heroku-postbuild": "cd ghostpipe-backend && npm install ffmpeg-static@4.2.4"
   }
 }
