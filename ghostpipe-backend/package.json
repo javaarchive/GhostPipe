@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@derhuerst/http-basic": "github:derhuerst/http-basic",
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "fluent-ffmpeg": "^2.1.2",
@@ -19,6 +20,7 @@
     "lru-cache": "^7.8.1",
     "morgan": "^1.10.0",
     "nanoid": "^3.3.2",
+    "node-fetch": "^2.6.7",
     "rate-limiter-flexible": "^2.3.6"
   },
   "devDependencies": {
