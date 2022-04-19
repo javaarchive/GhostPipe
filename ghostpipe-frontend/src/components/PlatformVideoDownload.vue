@@ -127,7 +127,7 @@ export default {
       this.workerPool = new WorkerPool(8);
 
       for(let filename of files){
-        this.workerPool.runInWorkerNowait(() => {
+        await this.workerPool.runInWorkerNowait(async () => {
             let resp = await dfetch("/real_api/download/" + filename, {
               cache: "no-cache",
               method: "GET",
