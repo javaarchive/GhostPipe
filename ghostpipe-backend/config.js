@@ -45,13 +45,7 @@ module.exports = {
     videoSizeLimit: 1024*1024*1024*5,
     videoTempDir: "/tmp/ghostpipe",
     ytdlpPath: (process.env.YTDLP_CWD) ? path.join(process.cwd(), "yt-dlp") : "yt-dlp",
-    taskRetentionTime: 4*60*60*1000, // 4 hours
-    defaultHeaders:{
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.50 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-us,en;q=0.5",
-        "Sec-Fetch-Mode": "navigate"
-    }
+    taskRetentionTime: 4*60*60*1000 // 4 hours
 }
 
 // GitPod helper

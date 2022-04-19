@@ -159,9 +159,6 @@ export default {
 
      hls.attachMedia(this.$refs["video"]);
      hls.startLoad(-1);
-
-     // Load subtitles
-     
          
   },
   beforeDestroy(){

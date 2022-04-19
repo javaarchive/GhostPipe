@@ -27,34 +27,28 @@ export function dfetch(url,fetchOptions = {method:"GET"},raw = false){
         function doFetch(){
             console.log("Fetching URL",newUrl);
             if(shouldTriggerOfflineMode()){
-                if(fetchOptions.refetchOnNetworkDie){
-                    console.log("Network not connected, refetching again in a few secs");
-                    setTimeout(doFetch, 5 * 1000);
-                    return;
-                }else{
-                    console.log("Fetching from offline cache");
-                    db.requests.where({
-                        url: newUrl,
-                        method: fetchOptions.method || "GET"
-                    }).toArray().then(matchedRequests => {
-                        console.log(newUrl,"matched to ",matchedRequests);
-                        if(matchedRequests.length){
-                            if(raw){
-                                resolve(new Response(matchedRequests[0].body, {
-                                    status: matchedRequests[0].status,
-                                    headers:{
-                                        "Content-Type": matchedRequests[0].contentType
-                                    }
-                                }));
-                            }else{
-                                matchedRequests[0].body.text().then(str => {
-                                    resolve(JSON.parse(str));
-                                });
-                            }
+                console.log("Fetching from offline cache");
+                db.requests.where({
+                    url: newUrl,
+                    method: fetchOptions.method || "GET"
+                }).toArray().then(matchedRequests => {
+                    console.log(newUrl,"matched to ",matchedRequests);
+                    if(matchedRequests.length){
+                        if(raw){
+                            resolve(new Response(matchedRequests[0].body, {
+                                status: matchedRequests[0].status,
+                                headers:{
+                                    "Content-Type": matchedRequests[0].contentType
+                                }
+                            }));
+                        }else{
+                            matchedRequests[0].body.text().then(str => {
+                                resolve(JSON.parse(str));
+                            });
                         }
-                    });
-                    return; // don't fetch
-                }
+                    }
+                });
+                return; // don't fetch
             }
             fetch(newUrl,fetchOptions).then(resp => {
                 console.log("Fetch response",newUrl,"got",resp.status);

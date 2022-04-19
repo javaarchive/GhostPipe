@@ -36,7 +36,6 @@
 <script>
 
 import {dfetch} from "../fetcher/data_fetcher";
-import WorkerPool from "../async/workers";
 import db from "../database/db";
 
 export default {
@@ -123,32 +122,28 @@ export default {
       let counter = 0;
       this.savedTotal = files.length;
       this.savedAmount = 0;
-
-      this.workerPool = new WorkerPool(8);
-
       for(let filename of files){
-        this.workerPool.runInWorkerNowait(() => {
-            let resp = await dfetch("/real_api/download/" + filename, {
-              cache: "no-cache",
-              method: "GET",
-              refetchOnNetworkDie: true
-            }, true);
+        // TODO: Check offline and stop in case of physical movement instead of spam retrying
+        let resp = await dfetch("/real_api/download/" + filename, {
+          cache: "no-cache",
+          method: "GET",
+          refetchOnNetworkDie: true
+        }, true);
 
-            console.log("Downloaded Part",filename)
+        console.log("Downloaded Part",filename)
 
-            let blob = await resp.blob();
+        let blob = await resp.blob();
 
-            await db.videoSegments.put({
-              vid: this.task.videoID,
-              time: Date.now(),
-              data: blob,
-              filename: filename
-            });
-
-            counter ++;
-            this.savedAmount = counter;
-            this.savedPercent = (counter / files.length) * 100;
+        await db.videoSegments.put({
+          vid: this.task.videoID,
+          time: Date.now(),
+          data: blob,
+          filename: filename
         });
+
+        counter ++;
+        this.savedAmount = counter;
+        this.savedPercent = (counter / files.length) * 100;
       }
       this.downloadingChunks = false;
       alert("Download Completed!");
