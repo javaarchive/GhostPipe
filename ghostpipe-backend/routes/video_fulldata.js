@@ -80,7 +80,12 @@ router.get("/subtitles/:vid", async (req, res) => {
         let type = req.query.type || "json3";
         let name = req.query.lang || "English";
         let langCode = req.query.langCode || "en";
-        let matchedSubtitles = getSubtitles(videoData, req.query.langCode).filter(subtitle => {
+        let subtitles = getSubtitles(videoData, req.query.langCode);
+        if(req.query.listing){
+            res.send(subtitles);
+            return;
+        }
+        let matchedSubtitles = subtitles.filter(subtitle => {
             return subtitle.name === name && subtitle.ext === type;
         });
         if(matchedSubtitles.length){
