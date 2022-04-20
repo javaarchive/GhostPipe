@@ -26,6 +26,8 @@ function preprocessVideoData(data){
     return data;
 }
 
+console.log("Registered Video Endpoint");
+
 router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
     let id = req.params.id;
     if(id.length > 12){
@@ -58,6 +60,8 @@ router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
         }
     }
 });
+
+console.log("Registered Subtitles Endpoint");
 
 router.get("/subtitles/:vid", async (req, res) => {
     if(video_lru.has(req.params.vid)){

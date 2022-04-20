@@ -1,4 +1,5 @@
 #!/bin/bash
+# bash for source cmd
 cd ghostpipe-backend
 echo Installing yt-dlp
 wget https://github.com/yt-dlp/yt-dlp/releases/download/2022.04.08/yt-dlp
