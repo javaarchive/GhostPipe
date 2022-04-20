@@ -36,6 +36,7 @@ function getSubtitles(videoData, lang){
     }
     return subtitles;
 }
+console.log("Registered Video Endpoint");
 
 router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
     let id = req.params.id;
@@ -69,6 +70,8 @@ router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
         }
     }
 });
+
+console.log("Registered Subtitles Endpoint");
 
 router.get("/subtitles/:vid", async (req, res) => {
     if(video_lru.has(req.params.vid)){
