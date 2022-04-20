@@ -26,6 +26,17 @@ function preprocessVideoData(data){
     return data;
 }
 
+function getSubtitles(videoData, lang){
+    let subtitles = [];
+    if(videoData.automatic_captions && video.automatic_captions[lang]){
+        subtitles = subtitles.concat(video.automatic_captions[lang]);
+    }
+    if(videoData.subtitles && videoData.subtitles[lang]){
+        subtitles = subtitles.concat(videoData.subtitles[lang])
+    }
+    return subtitles;
+}
+
 router.get("/video/:id",videoDeliveryRatelimiter, async (req,res) => {
     let id = req.params.id;
     if(id.length > 12){
@@ -66,7 +77,7 @@ router.get("/subtitles/:vid", async (req, res) => {
         let type = req.query.type || "json3";
         let name = req.query.lang || "English";
         let langCode = req.query.langCode || "en";
-        let matchedSubtitles = videoData.subtitles[langCode].filter(subtitle => {
+        let matchedSubtitles = getSubtitles(vidoeData, req.query.langCode).filter(subtitle => {
             return subtitle.name === name && subtitle.ext === type;
         });
         if(matchedSubtitles.length){
