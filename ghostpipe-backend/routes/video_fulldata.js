@@ -29,9 +29,11 @@ function preprocessVideoData(data){
 function getSubtitles(videoData, lang){
     let subtitles = [];
     if(videoData.automatic_captions && videoData.automatic_captions[lang]){
+        console.log("Found",videoData.automatic_captions[lang].length,"automatic captions. ");
         subtitles = subtitles.concat(videoData.automatic_captions[lang]);
     }
     if(videoData.subtitles && videoData.subtitles[lang]){
+        console.log("Found",videoData.subtitles[lang].length,"subtitles. ");
         subtitles = subtitles.concat(videoData.subtitles[lang])
     }
     return subtitles;
