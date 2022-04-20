@@ -28,8 +28,8 @@ function preprocessVideoData(data){
 
 function getSubtitles(videoData, lang){
     let subtitles = [];
-    if(videoData.automatic_captions && video.automatic_captions[lang]){
-        subtitles = subtitles.concat(video.automatic_captions[lang]);
+    if(videoData.automatic_captions && videoData.automatic_captions[lang]){
+        subtitles = subtitles.concat(videoData.automatic_captions[lang]);
     }
     if(videoData.subtitles && videoData.subtitles[lang]){
         subtitles = subtitles.concat(videoData.subtitles[lang])
